@@ -1,4 +1,4 @@
-export ZSH="/Users/carloseduardosx/.oh-my-zsh"
+export ZSH="/Users/jeovania/.oh-my-zsh"
 export MAVEN_OPTS="-Xmx1024m -XX:MaxPermSize=512m"
 
 ZSH_THEME="robbyrussell"
@@ -37,5 +37,5 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-function gmdevenv { cd /Users/carloseduardosx/Projects/greenmile/gm-dev-env/core; ./run.sh $*; cd - >/dev/null; }
+function gmdevenv { cd /Users/jeovania/Projects/greenmile/gm-dev-env/core; ./run.sh $*; cd - >/dev/null; }
 

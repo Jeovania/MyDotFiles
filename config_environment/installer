@@ -119,37 +119,37 @@ read -s password
 . iterm.sh
 
 # Installing Alfred
-. alfred.sh
+# . alfred.sh
 
 # Installing AppCleaner
-. appcleaner.sh
+# . appcleaner.sh
 
 # Installing Boostnote
-. boostnote.sh
+# . boostnote.sh
 
 # Installing Evernote
-. evernote.sh
+# . evernote.sh
 
 # Installing Google Chrome
 . google_chrome.sh
 
 # Installing Google Drive
-. google_drive.sh
+# . google_drive.sh
 
 # Installing Skype
-. skype.sh
+# . skype.sh
 
 # Installing 1Password
-. 1password.sh
+# . 1password.sh
 
 # Installing Itau
-. itau.sh
+# . itau.sh
 
 # Installing Microsoft-Office
-. microsoft_office.sh
+# . microsoft_office.sh
 
 # Installing Opera
-. opera.sh
+# . opera.sh
 
 # Installing Spotify
 . spotify.sh
@@ -173,10 +173,10 @@ read -s password
 #. github_desktop.sh
 
 # Installing Adobe Photoshop
-. photoshop.sh
+# . photoshop.sh
 
 # Installing Sketch
-. sketch.sh
+# . sketch.sh
 
 # Installing Slack
 . slack.sh
