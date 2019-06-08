@@ -1,0 +1,147 @@
+#!/bin/bash
+
+function addGoAlias() {
+  alias_name=$1
+  echo "alias go$alias_name=\"cd `pwd`\"" >> $HOME/Projects/MyDotFiles/.goaliases
+  source $HOME/.zshrc
+}
+
+function docker_stats() {
+  docker stats `docker ps | tail -n+2 | awk '{ print $NF }'`
+}
+
+function cp_file_content() {
+  local file="$1"
+  cat `pwd`/file | pbcopy
+}
+
+function find_function() {
+  type -a $1
+}
+
+function build_failure() {
+  exit 1
+}
+
+function build_success() {
+  exit 0
+}
+
+function find-process() {
+  sudo lsof -n -i :$1 | grep LISTEN
+}
+
+function count_files_recursively() {
+
+  local directory=$1
+
+  if [[ -d $directory ]]; then
+
+    file_number="$(find $directory -type f -print | wc -l)"
+    info "$file_number files in this directory"
+  else
+
+    error "The path passed should be a directory!"
+  fi
+}
+
+function show_enviroment_variables() {
+
+  info "$(printenv | sort)"
+}
+
+# Get colors in manual pages
+function man() {
+    env \
+        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+        LESS_TERMCAP_md=$(printf "\e[1;31m") \
+        LESS_TERMCAP_me=$(printf "\e[0m") \
+        LESS_TERMCAP_se=$(printf "\e[0m") \
+        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+        LESS_TERMCAP_ue=$(printf "\e[0m") \
+        LESS_TERMCAP_us=$(printf "\e[1;32m") \
+        man "$@"
+}
+
+function checksum() {
+    local file=$1
+    local sha=$2
+
+    if [[ -n "$sha" ]]; then
+
+      shasum -a $sha $file
+    else
+      shasum $file
+    fi
+}
+
+function start_emulator() {
+
+  emulator="$1"
+
+  if [[ -n $emulator ]]; then
+    screen -d -m player --vm-name "$emulator"
+  else
+    screen -d -m player --vm-name "063fce67-aa5a-4e72-ac56-5ea6761ba221" # Google Nexus 5 - 4.4.4 - API 19 - 1080x1920
+  fi
+}
+
+function quit_screen() {
+
+  screenname="$1"
+
+  if [[ -n "$screenname" ]]; then
+    screen -X -S "$screenname" quit
+  else
+    error "Should pass screenname to quit"
+  fi
+}
+
+function request_info() {
+  protocol=$1; url=$2; host=$protocol"://"$url
+
+  printf "------- Dig\n"
+  dig $url
+
+  printf "------- Curl\n\n\n"
+  curl -v -I -H "Testing: Test header so you see this works :)" $host
+
+  printf "\n\n\n------- Open SSL\n\n\n"
+  openssl s_client -connect $url:443 -tls1
+
+  printf "\n\n\n------- WGET\n\n\n"
+  wget --server-response -d -H -t 3 -v --spider $url
+}
+
+function replace_icons() {
+  zip="$1"
+  if test -e "$zip" ; then
+    mkdir icons
+    unzip -d icons "$zip"
+    cat icons/selection.json > gm-mobile-selection.json
+    cat icons/style.css > gm-mobile-font-style.css
+    cp icons/fonts/* fonts
+    rm -rf icons
+  else
+    echo "File not exist, should pass icons zip file"
+  fi
+}
+
+function chrome(){
+  url=$1
+  /usr/bin/open -a "/Applications/Google Chrome.app" "$url"
+}
+
+function jira () {
+  task=$1
+  if [[ -z "$task" ]]; then
+    fb=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+    name=$(sed "s/feature\///g" <<< "$fb")
+    task=$(sed "s/hotfix\///g" <<< "$name")
+  fi
+  chrome "https://jira.greenmile.com/browse/GM-$task"
+}
+
+function sha1() {
+  openssl sha1 $1
+}

@@ -1,0 +1,296 @@
+#!/bin/bash
+
+function android_app_backup() {
+  local package="$1"
+  adb backup -f ~/Documents/adb_backup/GMBackup.ab -n oapk $package
+}
+
+function android_type_text() {
+  local text=$1
+
+  adb shell input text "${text// /%s}"
+}
+
+function android_clear_input() {
+  local loop_count=$1
+
+  adb shell input keyevent KEYCODE_MOVE_END
+
+  for i in $(seq $loop_count)
+  do
+    adb shell input keyevent KEYCODE_DEL
+  done
+}
+
+function android_current_activity() {
+  current_activity=$(adb shell dumpsys activity activities | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn} mResumedActivity | cut -d . -f 5 | cut -d ' ' -f 1)
+
+  if [[ $current_activity != *"Activity" ]]; then
+    current_activity=$(adb shell dumpsys activity activities | grep mFocusedActivity | cut -d . -f 5 | cut -d ' ' -f 1)
+  fi
+
+  echo $current_activity
+}
+
+function android_current_list_activity() {
+  current_activity=$(adb -d shell dumpsys activity activities | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn} mResumedActivity | cut -d . -f 6 | cut -d ' ' -f 1)
+
+  if [[ $current_activity != *"Activity" ]]
+  then
+    current_activity=$(adb -d shell dumpsys activity activities | grep mFocusedActivity | cut -d . -f 5 | cut -d ' ' -f 1)
+  fi
+
+  echo $current_activity
+}
+
+function android_screenshot() {
+
+    name="$1"
+
+    if [[ -n $name ]]; then
+      adb shell screencap -p | perl -pe 's/\x0D\x0A/\x0A/g' > $name.png
+      open $name.png
+    else
+      adb shell screencap -p | perl -pe 's/\x0D\x0A/\x0A/g' > screen.png
+      open screen.png
+    fi
+}
+
+function android_clear_app_data() {
+
+  package="$1"
+
+  if [[ -n "$package" ]]; then
+    adb -d shell input keyevent 3
+    adb -d shell pm clear $package
+  else
+    error "Should pass a app package name"
+  fi
+}
+
+# TODO Implement counter
+function android_hungry_shark_earn_diamond() {
+
+  ((diamonds = 0))
+
+  while [[ true ]]; do
+    adb -d shell input tap 730 830 # Zenfone 2: 746 826  -  Galaxy S5: 730 830
+    sleep 90s
+
+    current_activity=$(android_current_list_activity)
+    info "Current Acitivty: $current_activity"
+    if [[ "$current_activity" == "AppLovinInterstitialActivity" || "$current_activity" == "FullScreenAdActivity" || "$current_activity" == "adcolony" || "$current_activity" == "USBConnection" ]]; then
+
+      ((diamonds=diamonds + 2))
+      success "Current diamonds earned: $diamonds => `date +"%a %-d of %b of %Y at %X"`"
+
+      ## Press BackButton to close ads
+      adb -d shell input keyevent KEYCODE_BACK
+      sleep 5s
+    else
+
+      error "Fail to load ads!"
+      error "Current diamonds earned: $diamonds => `date +"%a %-d of %b of %Y at %X"`"
+
+      ## Close  dialog
+      adb -d shell input keyevent KEYCODE_ENTER
+      adb -d shell input keyevent KEYCODE_ENTER
+    fi
+  done
+}
+
+function mvmipmap() {
+
+  mdpi="$1/mipmap-mdpi"
+  hdpi="$1/mipmap-hdpi"
+  xhdpi="$1/mipmap-xhdpi"
+  xxhdpi="$1/mipmap-xxhdpi"
+  xxxhdpi="$1/mipmap-xxxhdpi"
+
+  if [[ -d "$mdpi" ]]; then
+
+    cp $mdpi/* mipmap-mdpi
+  fi
+
+  if [[ -d "$hdpi" ]]; then
+
+    cp $hdpi/* mipmap-hdpi
+  fi
+
+  if [[ -d "$xhdpi" ]]; then
+
+    cp $xhdpi/* mipmap-xhdpi
+  fi
+
+  if [[ -d "$xxhdpi" ]]; then
+
+    cp $xxhdpi/* mipmap-xxhdpi
+  fi
+
+  if [[ -d "$xxxhdpi" ]]; then
+
+    cp $xxxhdpi/* mipmap-xxxhdpi
+  fi
+}
+
+function mvdrawable() {
+
+  mdpi="$1/drawable-mdpi"
+  hdpi="$1/drawable-hdpi"
+  xhdpi="$1/drawable-xhdpi"
+  xxhdpi="$1/drawable-xxhdpi"
+  xxxhdpi="$1/drawable-xxxhdpi"
+
+  if [[ -d "$mdpi" ]]; then
+
+    cp $mdpi/* drawable-mdpi
+  fi
+
+  if [[ -d "$hdpi" ]]; then
+
+    cp $hdpi/* drawable-hdpi
+  fi
+
+  if [[ -d "$xhdpi" ]]; then
+
+    cp $xhdpi/* drawable-xhdpi
+  fi
+
+  if [[ -d "$xxhdpi" ]]; then
+
+    cp $xxhdpi/* drawable-xxhdpi
+  fi
+
+  if [[ -d "$xxxhdpi" ]]; then
+
+    cp $xxxhdpi/* drawable-xxxhdpi
+  fi
+}
+
+function show_pn_by_apk() {
+
+  aapt dump badging $1 | grep package:\ name
+}
+
+function gp() {
+
+  permission="$1"
+
+  if [[ -n "$permission" ]]; then
+
+    adb shell pm grant $permission
+    success "Permission granted"
+  else
+
+    error "Should pass a permission name"
+  fi
+}
+
+function rp() {
+
+  permission="$1"
+
+  if [[ -n "$permission" ]]; then
+
+    adb shell pm revoke $permission
+    success "Permission revoked"
+  else
+
+    error "Should pass a permission name"
+  fi
+}
+
+function ak() {
+
+  keystorePath="$1"
+  keystoreAlias="$2"
+  apkPath="$3"
+  apkNewName="$4"
+
+  if [[ -z "$keystorePath" || -z "$keystoreAlias" || -z "$apkPath" || -z "$apkNewName" ]]; then
+
+    error "Should pass:"
+    error "1- keystorePath"
+    error "2- keystoreAlias"
+    error "3- apkPath"
+    error "4- apkNewName"
+    return
+  fi
+
+  if [[ ! "$keystorePath" == /* ]]; then
+
+    error "Should pass a literal path for the keystore."
+    return
+  fi
+
+  if [[ ! "$apkPath" =~ [a-z]*.apk$ || ! "$apkNewName" =~ [a-z]*.apk$ ]]; then
+
+    error "Should pass an apk file"
+    return
+  fi
+
+  info "Assigning keystore to apk"
+  jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore "$keystorePath" "$apkPath" "$keystoreAlias"
+
+  info "Validate the apk keystore assign"
+  jarsigner -verify -verbose -certs "$apkPath"
+
+  info "Zipaligning apk"
+  zipalign -v 4 "$apkPath" "$apkNewName"
+}
+
+function gmu() {
+
+  update_broadcast=$(echo "adb shell am broadcast \
+    -a com.greenmile.updater.UPDATE \
+    -n com.greenmile.updater/.event.UpdateModuleEventReceiver")
+
+  if [[ $# -lt 6 ]]; then
+
+    error "Cannot update module without module information"
+
+    info "Should pass the following options in this sequence to make possible update module:"
+    info "URL"
+    info "CHECKSUM"
+    info "MODULE"
+    info "NOTIFICATION_TITLE"
+    info "NOTIFICATION_PROGRESS_MESSAGE"
+    info "NOTIFICATION_COMPLETED_MESSAGE"
+
+    return
+  fi
+
+  for i in `seq $#`
+  do
+
+    case "$i" in
+
+      1) update_broadcast+=" --es updaterURL \"$1\""
+         ;;
+      2) update_broadcast+=" --es updaterChecksum \"$2\""
+         ;;
+      3) update_broadcast+=" --es updaterModule \"$3\""
+         ;;
+      4) update_broadcast+=" --es notificationTitle \"$4\""
+         ;;
+      5) update_broadcast+=" --es downloadProgressMessage \"$5\""
+         ;;
+      6) update_broadcast+=" --es downloadCompletedMessage \"$6\""
+         ;;
+      *) error "Only need four options for update module"
+         return
+    esac
+  done
+
+  eval "$update_broadcast"
+}
+
+kill_app() {
+
+  if [[ -n "$1" ]]; then
+
+    adb shell am force-stop "$1"
+  else
+    error "Should pass package name!"
+  fi
+}

@@ -1,0 +1,272 @@
+#!/bin/bash
+
+#################################################################
+# Android                                                       #
+#################################################################
+
+alias android_lp="adb shell pm list packages -u";
+
+alias lp="adb shell pm list permissions -d -g"
+
+alias lf="adb logcat -v time -s FA FA-SVC"
+
+alias android_clean_log="adb logcat -c"
+
+alias android_disable_wifi="adb shell svc wifi disable"
+
+alias android_enable_wifi="adb shell svc wifi enable"
+
+alias android_disable_wifi="adb shell svc wifi disable"
+
+alias android_enable_wifi="adb shell svc wifi enable"
+
+alias android_backup="adb backup -f ~/Documents/adb_backup/GMBackup.ab -n oapk com.greenmile.android"
+
+alias android_decompress_backup='dd if=GMBackup.ab bs=1 skip=24 | python -c "import zlib, sys;sys.stdout.write(zlib.decompress(sys.stdin.read()))" | tar -xvf -'
+
+alias android_list_all_packages="adb -d shell 'pm list packages -f' | sed -e 's/.*=//' | sort"
+
+
+#################################################################
+# Greenmile                                                     #
+#################################################################
+
+alias gmdjs_test="npm run prep:deps && cross-env CI=true react-scripts test --testPathPattern=\"test/app/containers/pages/FinancialSummaryPage.test.jsx\""
+
+alias gmdjs_igrc_local="npm uninstall --save gm-react-components && npm i --save $HOME/Projects/greenmile/gm-react-components"
+
+alias gm_pidcat="pidcat com.greenmile.android"
+
+alias gm_push_db_for_survey_tests="adb shell rm /data/data/com.greenmile.android/databases/greenmile.db-journal && adb push /android_appium_apks/master/greenmile.db /data/data/com.greenmile.android/databases/greenmile.db;
+                                   adb push /android_appium_apks/master/globalPrefs.xml /data/data/com.greenmile.android/shared_prefs/globalPrefs.xml && adb shell am start -n com.greenmile.android/com.greenmile.android.activity.list.ListStopsActivity"
+
+alias gm_reinstall_app="adb uninstall com.greenmile.android;
+                        adb install /android_appium_apks/master/greenmile-android-release.apk && adb shell am start -n com.greenmile.android/com.greenmile.android.activity.ControllerActivity"
+
+alias gm_db_pull="adb shell \"run-as com.greenmile.android; chmod 666 /data/data/com.greenmile.android/databases/greenmile.db\";
+                  adb pull /data/data/com.greenmile.android/databases/greenmile.db /Users/carloseduardo/Documents/banco_devices"
+
+alias gm_copy_from_databases_to_android_appium_apks="cp -R /Users/carloseduardo/banco_devices/greenmile.db /android_appium_apks/master/greenmile.db"
+
+alias gm_start_list_stops_activity="adb shell am start -n com.greenmile.android/com.greenmile.android.activity.list.ListStopsActivity"
+
+alias gm_driver_build="./gradlew clean daoConfig build --configure-on-demand --parallel --max-workers 4 --daemon"
+
+alias gm_driver_normal_build="gradle clean daoConfig build"
+
+alias gm_build_driver_tests="mvn clean compile exec:java package -DskipTests"
+
+alias gm_driver_tests_exec="mvn clean compile exec:java test"
+
+alias gm_copy_debug_apk_to_appium_folder="cp $HOME/Projects/gm-driver-android/driver/greenmile-android/build/outputs/apk/greenmile-android-debug-unaligned-*.apk /android_appium_apks/master/greenmile-android-release.apk"
+
+alias gm_install_debug_apk="adb install $HOME/Projects/gm-driver-android/greenmile-android/build/outputs/apk/greenmile-android-debug-unaligned-*.apk"
+
+alias gm_uninstall_driver="adb uninstall com.greenmile.android"
+
+alias gm_uninstall_updater="adb uninstall com.greenmile.updater"
+
+alias gm_get_data_device="adb pull /data/data/com.greenmile.android/databases/greenmile.db ~/greenmile/databases/"
+
+alias gmdjs_get_data_device="adb pull /data/data/com.greenmile.driver/files ~/greenmile/databases/gmdjs_database"
+
+alias gm_push_data_device="adb push greenmile.db /data/data/com.greenmile.android/databases/greenmile.db"
+
+alias gm_start_list_stop="adb shell am start -n com.greenmile.android/com.greenmile.android.activity.list.ListStopsActivity"
+
+alias gm_start_controller_activity="adb shell am start -n com.greenmile.android/com.greenmile.android.activity.ControllerActivity"
+
+alias gm_copy_db_to_sdcard="adb shell am broadcast -a com.greenmile.android.COPY_DATABASE && adb pull sdcard/Greenmile/database/greenmile.db ~/greenmile/databases/gmda/"
+
+alias gm_server_run_sonar="mvn clean package -P remote sonar:sonar -Dsonar.login=greenmile -Dsonar.password=gr33n765u! -Dsonar.host.url=http://192.168.99.100:9000/sonar -XX:MaxPermSize=1024m"
+
+alias gm_fuck="gm_driver_build;
+               gm_uninstall_all;
+               gm_install_debug_apk;
+               gm_start_controller_activity;"
+
+alias gmdjs_android_build="npm run build:android \
+                           && adb install -r platforms/android/build/outputs/apk/android-x86-debug.apk \
+                           && adb shell am start -n com.greenmile.driver/com.greenmile.driver.MainActivity"
+
+alias gmdjs_android_clean_build="cordova clean && npm run build:android"
+
+alias gmdjs_copy_db="adb shell am broadcast -a com.greenmile.plugins.COPY_DATABASE \
+                        && adb pull sdcard/Greenmile/database/GreenMile.realm ~/greenmile/databases/gmdjs_database/"
+
+alias gmdjs_start_main_activity="adb shell am start -n com.greenmile.driver/com.greenmile.driver.MainActivity"
+
+alias gmdmerch_start_main_activity="adb shell am start -n com.greenmile.merch/com.greenmile.merch.MainActivity"
+
+alias agenda_deploy="gulp deploy --crosswalk && adb install build/AgendaTeen.apk && agenda_start"
+
+alias at_start="adb shell am start -n com.agendateen.app/.MainActivity"
+
+alias ae_start="adb shell am start -n com.agendakidsdigital.app/.MainActivity"
+
+alias ae_get_data_device="adb pull /data/data/com.agendakidsdigital.app/ ~/agendaedu/databases/"
+
+alias bms="./gradlew clean build -PTMDB_API_KEY=eae42979f396c0f200d5d7e347efacdf"
+
+# alias gmdjs_copy_database="adb pull /data/data/com.greenmile.driver/files/ \
+#                               /Users/carloseduardo/greenmile/databases/gmdjs_database \
+#                               && open /Users/carloseduardo/greenmile/databases/gmdjs_database/files/default.realm"
+
+
+#################################################################
+# Renewer                                                       #
+#################################################################
+
+alias rb_get_database="adb pull /data/data/com.carloseduardo.renewer.books/databases/renewer.db $HOME/databases/renewer.db"
+
+alias rb_pidcat="pidcat com.carloseduardo.renewer.books"
+
+alias rb_uninstall="adb uninstall com.carloseduardo.renewer.books"
+
+
+#################################################################
+# Virtual Box                                                   #
+#################################################################
+
+alias list_vms="VBoxManage list vms"
+
+#################################################################
+# Git                                                           #
+#################################################################
+
+alias gl='git log --all --graph --pretty=format:"%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit --date=relative'
+
+alias g_unmerge='git reset --merge ORIG_HEAD'
+
+alias g_show_unchaged_files="git ls-files -v|grep '^h'"
+
+#################################################################
+# Maven                                                         #
+#################################################################
+
+alias mvn_install="mvn clean install -DskipTests"
+
+alias mvn_package="mvn clean compile package -DskipTests"
+
+alias mvn_install_sync="mvn clean install -U -P -DskipTests"
+
+
+#################################################################
+# Source                                                        #
+#################################################################
+
+alias reload="source $HOME/.zshrc"
+
+#################################################################
+# Faces https://www.npmjs.com/package/cool-ascii-faces          #
+#################################################################
+
+alias faces="cool-face -a"
+
+#################################################################
+# Apple                                                         #
+#################################################################
+
+alias kill_system_ui="killall SystemUIServer"
+alias kill_finder="killall Finder /System/Library/CoreServices/Finder.app"
+alias show_files="defaults write com.apple.finder AppleShowAllFiles YES; kill_finder"
+alias hide_files="defaults write com.apple.finder AppleShowAllFiles NO; kill_finder"
+alias update_osx="sudo softwareupdate -i -a"
+alias update_brew="brew update; brew upgrade --all; brew linkapps; brew cleanup; brew cask update"
+alias update_all='update_osx; update_brew; npm update -g; sudo gem update --system; sudo gem update'
+alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+alias spotlight_off="sudo mdutil -a -i off"
+alias spotlight_on="sudo mdutil -a -i on"
+alias uninstall_java="sudo rm -fr /Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin && sudo rm -fr /Library/PreferencePanes/JavaControlPanel.prefPane && sudo rm -fr ~/Library/Application\ Support/Java"
+
+#################################################################
+# Util                                                          #
+#################################################################
+
+alias list_so_logs="ls -la /var/log"
+
+alias list_temp_files="ls -la /private/tmp"
+
+alias list_all_devices="ls -la /dev"
+
+alias list_system_applications="ls -la /bin /usr/bin"
+
+alias list_superuser_applications="ls -la /sbin /usr/sbin"
+
+alias list_brew_applications="ls -la /usr/local/Cellar"
+
+alias list_applications_installed_by_user="ls -la \
+                                              /usr/local/Cellar \
+                                              /usr/local/bin \
+                                              /usr/local/etc \
+                                              /usr/local/share \
+                                              /usr/local/opt \
+                                              /usr/local/lib"
+
+alias list_all_disponible_documentation="ls -la \
+                                              /usr/share/man/man1 \
+                                              /usr/share/man/man2 \
+                                              /usr/share/man/man3 \
+                                              /usr/share/man/man4 \
+                                              /usr/share/man/man5 \
+                                              /usr/share/man/man6 \
+                                              /usr/share/man/man7 \
+                                              /usr/share/man/man8 \
+                                              /usr/share/man/man9 \
+                                              /usr/share/man/mann >> ~/disponible_documentation.txt; \
+                                              open ~/disponible_documentation.txt; \
+                                              sleep 3s; \
+                                              rm ~/disponible_documentation.txt;"
+
+#################################################################
+# Docker                                                        #
+#################################################################
+
+alias dc="docker-compose"
+alias dm="docker-machine"
+alias dps="docker ps"
+alias dmls="docker-machine ls"
+
+#################################################################
+# Cordova                                                       #
+#################################################################
+alias c="cordova"
+
+#################################################################
+# Babel                                                         #
+#################################################################
+alias babel="babel.js"
+
+#################################################################
+# VIM                                                           #
+#################################################################
+alias vim="/usr/local/bin/vim"
+
+#################################################################
+# Webpack                                                       #
+#################################################################
+alias webpack="webpack.js"
+alias webpack-dev-server="webpack-dev-server.js"
+
+
+#################################################################
+# Components                                                    #
+#################################################################
+alias component_build="webpack --progress --colors && open src/html/view/index.html"
+
+
+#################################################################
+# Python                                                        #
+#################################################################
+alias pserver="python -m SimpleHTTPServer"
+
+#################################################################
+# Grep updated                                                  #
+#################################################################
+alias ggrep="/usr/local/Cellar/grep/2.27/bin/grep"
+
+#################################################################
+# NeoVIM                                                        #
+#################################################################
+alias vim="/usr/local/bin/nvim"

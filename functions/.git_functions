@@ -1,0 +1,157 @@
+#!/bin/bash
+
+function g_files_modified_by() {
+  local name="$1"
+  git log --pretty="%H" --author=$name | while read commit_hash; do git show --oneline --name-only $commit_hash | tail -n+2; done | sort | uniq
+}
+
+function g_actual_branch() {
+  git branch | sed -n '/\* /s///p'
+}
+
+function g_purge_branch() {
+  git branch -D "${1}" && git push --delete origin "${1}"
+}
+
+function g_dir_assume_unchaged() {
+  git update-index --assume-unchanged $(git ls-files | tr '\n' ' ')
+}
+
+function g_dir_no_assume_unchaged() {
+  git update-index --no-assume-unchanged $(git ls-files | tr '\n' ' ')
+}
+
+function gpull() {
+  local branch=$( git branch | sed -n 's/^\* \(.*\)/\1/p' )
+  git pull origin $branch
+}
+
+function gpush() {
+  local branch=$( git branch | sed -n 's/^\* \(.*\)/\1/p' )
+  git push --recurse-submodules=on-demand origin $branch
+}
+
+function gstash() {
+  g stash apply && g stash drop
+}
+
+function g_cf() {
+
+  if [[ "$2" == "js" ]]; then
+    git checkout react/GMDJS-$1
+  else
+    git checkout feature/GM-$1
+  fi
+}
+
+function g_ch() {
+
+  if [[ "$2" == "js" ]]; then
+    git checkout hotfix/GMDJS-$1
+  else
+    git checkout hotfix/GM-$1
+  fi
+}
+
+function gsync() {
+
+  info "Adding all files to index"
+  git add .
+
+  info "Committing files indexed"
+  git commit -m "$(date +"%a %-d of %b of %Y at %X")"
+
+  info "Syncing local changes with remote changes"
+  gpull
+  gpush
+}
+
+function gh_branches() {
+
+  local user
+  local project
+
+  info "Type the user:"
+  read user
+
+  info "Type the project: "
+  read project
+
+  open https://github.com/$user/$project/branches
+}
+
+function gh_branches_compare() {
+
+  local user
+  local project
+  local branch
+
+  info "Type the user:"
+  read user
+
+  info "Type the project"
+  read project
+
+  info "Type the branch"
+  read branch
+
+
+  open https://github.com/$user/$project/compare/$branch
+}
+
+function gh_branches_compare_range() {
+
+  local user
+  local project
+  local first_branch
+  local second_branch
+
+  info "Type the user"
+  read project
+
+  info "Type the project"
+  read project
+
+  info "Type the first branch:"
+  read first_branch
+
+  info "Type the second branch:"
+  read second_branch
+
+
+  open https://github.com/greenmilellc-org/$project/compare/$first_branch...$second_branch
+}
+
+function gh_commits() {
+
+  local user
+  local project
+  local branch
+  local author
+
+  info 'Type the user:'
+  read user
+
+  info 'Type the project:'
+  read project
+
+  info 'Type the branch:'
+  read branch
+
+  info 'Type the author:'
+  read author
+
+  open https://github.com/$user/$project/commits/$branch\?author\=$author
+}
+
+g_assume_unchaged() {
+  g update-index --assume-unchanged $1
+}
+
+g_no_assume_unchaged() {
+  g update-index --no-assume-unchanged $1
+}
+
+g_list_unchaged_files() {
+  git ls-files -v | grep -E "^[a-z]"
+}
