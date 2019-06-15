@@ -1,4 +1,4 @@
-installer "git" "brew install git --with-default-names" true
+installer "git" "brew install git" true
 
 cd .. \
 && npm install -g diff-so-fancy \
